@@ -8,7 +8,7 @@ with sync_playwright() as p:
     page = browser.new_page()
     page.goto("https://www.doctolib.de/urologie/deutschland?insurance_sector=private")
     page.get_by_label("Annehmen und Schließen:").click()
-    
+
     link_selector_1 = ".dl-card-content .dl-full-width a.dl-p-doctor-result-link"
     name_selector_1 = ".dl-card-content .dl-full-width .dl-text-primary-110"
     basic_info_selector_1 = ".dl-card-content > .mt-8"
@@ -22,7 +22,6 @@ with sync_playwright() as p:
     services_selector_2 = ".dl-profile-card-content > .dl-profile-skills"
     profile_bio_selector_2 = ".dl-profile-card-content .dl-profile-bio"
     lang_website_selector_2 = ".dl-profile-card-content > .dl-profile-row-content"
-
 
     all_data = []
 
@@ -40,10 +39,8 @@ with sync_playwright() as p:
             for link_elem, name_elem, info_elem in zip(all_link_elements, all_name_elements, all_info_elements):
                 href = link_elem.evaluate('(element) => element.href')
                 name = name_elem.evaluate('(element) => element.textContent')
+                info = '|'.join(sub_div.text_content().strip() for sub_div in info_elem.query_selector_all('div'))
 
-                # Extract text content of each sub div element and concatenate with '|'
-                info = ' | '.join(sub_div.text_content().strip() for sub_div in info_elem.query_selector_all('div'))
-                
                 if href and name and info:
                     doctor_data = {
                         "name": name.strip(),
@@ -51,6 +48,17 @@ with sync_playwright() as p:
                         "link": href
                     }
                     all_data.append(doctor_data)
+
+                    # Visit each doctor's link to extract additional information
+                    doctor_page = browser.new_page()
+                    doctor_page.goto(href)
+
+                    # Add your logic here to extract further information from the doctor's page
+                    # For example, extracting specific details, clicking elements, etc.
+                    # Extract and append the desired data to the 'doctor_data' dictionary
+
+                    # Close the doctor's page and return to the main page for scraping
+                    doctor_page.close()
 
             # Scroll down to load more content
             page.mouse.wheel(delta_x=0, delta_y=5000)

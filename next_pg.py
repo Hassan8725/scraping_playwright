@@ -12,21 +12,15 @@ with sync_playwright() as p:
     link_selector_1 = ".dl-card-content .dl-full-width a.dl-p-doctor-result-link"
     name_selector_1 = ".dl-card-content .dl-full-width .dl-text-primary-110"
     basic_info_selector_1 = ".dl-card-content > .mt-8"
-    services_selector_1 = ""
-    profile_bio_selector_1 = ""
-    lang_website_selector_1 = ""
     
     link_selector_2 = ".dl-search-result-presentation .dl-search-result-title .dl-link"
     name_selector_2 = ".dl-search-result-presentation .dl-search-result-title .dl-text-primary-110"
     basic_info_selector_2 = ".dl-search-result-presentation > .ml-96"
-    services_selector_2 = ".dl-profile-card-content > .dl-profile-skills"
-    profile_bio_selector_2 = ".dl-profile-card-content .dl-profile-bio"
-    lang_website_selector_2 = ".dl-profile-card-content > .dl-profile-row-content"
-
 
     all_data = []
 
-    while True:  # Scraping for multiple pages
+    #while True:  # Scraping for multiple pages
+    for _ in range(3):
         all_link_elements = page.query_selector_all(link_selector_1)
         all_name_elements = page.query_selector_all(name_selector_1)
         all_info_elements = page.query_selector_all(basic_info_selector_1)
@@ -40,9 +34,7 @@ with sync_playwright() as p:
             for link_elem, name_elem, info_elem in zip(all_link_elements, all_name_elements, all_info_elements):
                 href = link_elem.evaluate('(element) => element.href')
                 name = name_elem.evaluate('(element) => element.textContent')
-
-                # Extract text content of each sub div element and concatenate with '|'
-                info = ' | '.join(sub_div.text_content().strip() for sub_div in info_elem.query_selector_all('div'))
+                info = info_elem.text_content()
                 
                 if href and name and info:
                     doctor_data = {
